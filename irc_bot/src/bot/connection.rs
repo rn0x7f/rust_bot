@@ -1,5 +1,5 @@
 use irc::client::prelude::*;
-use crate::bot::credentials::Credentials;
+use crate::bot::credentials::IRCCredentials;
 
 pub struct Connection {
 	pub host: String,
@@ -11,7 +11,7 @@ pub struct Connection {
 
 impl Default for Connection {
     fn default() -> Self {
-        let credentials = Credentials::new();
+        let credentials = IRCCredentials::new();
         Self {
             host: credentials.irc_server,
             port: credentials.irc_port,

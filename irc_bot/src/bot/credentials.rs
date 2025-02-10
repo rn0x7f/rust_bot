@@ -1,7 +1,7 @@
 use dotenvy;
 use std::env;
 
-pub(crate) struct Credentials {
+pub(crate) struct IRCCredentials {
     pub irc_server: String,
     pub irc_nickname: String,
     pub irc_password: String,
@@ -9,7 +9,7 @@ pub(crate) struct Credentials {
     pub irc_channels: Vec<String>,
 }
 
-impl Credentials {
+impl IRCCredentials {
     pub fn new() -> Self {
         dotenvy::from_filename("config/.env").ok();
 
