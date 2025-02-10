@@ -1,9 +1,9 @@
-use crate::connection::Connection;
 use irc::proto::Command;
 use irc::client::Client;
 use futures_util::StreamExt;
-use crate::simple_message;
-use crate::command_handler;
+use crate::bot::connection::Connection;
+use crate::bot::simple_message;
+use crate::bot::command_handler;
 
 pub struct MessageHandler {
     client: Client,
@@ -13,7 +13,7 @@ pub struct MessageHandler {
 impl MessageHandler {
     pub async fn new() -> Result<Self, irc::error::Error> {
         let connection = Connection::default();
-        let client = connection.connect().await.unwrap();
+        let client = connection.connect().await?;
         println!("Connected to IRC server");
         client.identify()?; // Asegura que el bot se autentique correctamente
         let nickname = connection.nickname.clone();
@@ -41,10 +41,10 @@ impl MessageHandler {
                 },
                 Command::PING(ref server, ref msg) => {
                     // Responder a PING con PONG para mantener la conexión
-                    println!("Received PING from server: {}", server);
+                    //println!("Received PING from server: {}", server);
                     let pong_message = Command::PONG(server.to_string(), msg.clone());
                     self.client.send(pong_message)?;
-                    println!("Sent PONG to server");
+                    //println!("Sent PONG to server");
                 },
                 _ => {}
             }

@@ -1,5 +1,3 @@
-// src/message_handler.rs
-
 use irc::client::Client;
 
 pub fn simple_message(client: &Client, nickname: &str, msg: &str) {

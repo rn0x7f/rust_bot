@@ -1,5 +1,5 @@
 use irc::client::prelude::*;
-use crate::credentials::Credentials;
+use crate::bot::credentials::Credentials;
 
 pub struct Connection {
 	pub host: String,
