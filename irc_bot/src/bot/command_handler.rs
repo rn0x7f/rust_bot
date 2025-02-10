@@ -4,7 +4,7 @@ use crate::bot::simple_message;
 use crate::bot::commands::help_command;
 use crate::bot::commands::user_command;
 
-pub async fn handle_command(client: &Client, message: &irc::client::prelude::Message, msg: &str, osu_api_client: &OsuApiClient) {
+pub async fn handle_command(client: &Client, message: &irc::client::prelude::Message, msg: &str, osu_api_client: &mut OsuApiClient) {
     let parts: Vec<&str> = msg.split_whitespace().collect(); // Separar el mensaje en partes
     if let Some(command) = parts.get(0) {
         // Remover el "!" al principio del comando

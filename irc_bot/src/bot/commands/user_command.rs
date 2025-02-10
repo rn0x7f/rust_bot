@@ -1,27 +1,26 @@
 use crate::bot::simple_message;
+use crate::osu_api::OsuApiClient;
 
 pub async fn user_command(
     client: &irc::client::Client,
     nickname: &str,
-    osu_api_client: &crate::osu_api::OsuApiClient,
+    osu_api_client: &mut OsuApiClient,
     username: &str
 ) -> Result<(), anyhow::Error> {
-    let user = osu_api_client.get_user_data(username).await?; // El `?` ahora funciona bien
+    let user = osu_api_client.get_user(username).await?;
 
-    // Construir un solo mensaje con todos los datos, usando un delimitador en lugar de saltos de línea
     let message = format!(
-        "User: {} | ID: {} | Country: {} | Playcount: {} | Ranked Score: {} | Total Score: {} | PP: {} | Accuracy: {} | Level: {} | Rank: {} | Country Rank: {}",
+        "User: {} | ID: {} | Country: {} | Playcount: {} | Play Time: {} | PP: {:.2} | Accuracy: {:.2}% | Total hits {} ] Global Rank: {} ] Active: {}",
         user.username,
-        user.user_id,
-        user.country,
-        user.playcount,
-        user.ranked_score,
-        user.total_score,
-        user.pp_raw,
-        user.accuracy,
-        user.level,
-        user.pp_rank,
-        user.pp_country_rank
+        user.id,
+        user.country_code,
+        user.statistics.play_count,
+        user.statistics.play_time,
+        user.statistics.pp,
+        user.statistics.hit_accuracy,
+        user.statistics.total_hits,
+        user.statistics.global_rank.unwrap_or(0), // `unwrap_or(0)` para evitar problemas con `null`
+        user.is_active,
     );
 
     // Enviar el mensaje completo

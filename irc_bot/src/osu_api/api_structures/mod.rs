@@ -1,2 +1,3 @@
-pub mod osu_user;
-pub mod user_request;
+pub mod auth_request;
+pub mod auth_response;
+pub mod user_response;

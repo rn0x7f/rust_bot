@@ -19,7 +19,8 @@ impl MessageHandler {
         println!("Connected to IRC server");
         client.identify()?; // Asegura que el bot se autentique correctamente
         let nickname = connection.nickname.clone();
-        let osu_api_client = OsuApiClient::new();
+        let osu_api_client = OsuApiClient::default();
+        //let _ = osu_api_client.authenticate().await;
         Ok(Self { client, nickname, osu_api_client }) 
     }
 
@@ -32,7 +33,7 @@ impl MessageHandler {
                     if target == &self.nickname {
                         if msg.starts_with('!') {
                             // Manejar el comando
-                            command_handler::handle_command(&self.client, &message, msg, &self.osu_api_client).await;
+                            command_handler::handle_command(&self.client, &message, msg, &mut self.osu_api_client).await;
                         } else {
                             // Si no es un comando, responder con un mensaje simple
                             println!("[{}]: {}", message.source_nickname().unwrap_or("unknown"), msg);
@@ -44,10 +45,10 @@ impl MessageHandler {
                 },
                 Command::PING(ref server, ref msg) => {
                     // Responder a PING con PONG para mantener la conexión
-                    //println!("Received PING from server: {}", server);
+                    println!("Received PING from server: {}", server);
                     let pong_message = Command::PONG(server.to_string(), msg.clone());
                     self.client.send(pong_message)?;
-                    //println!("Sent PONG to server");
+                    println!("Sent PONG to server");
                 },
                 _ => {}
             }
