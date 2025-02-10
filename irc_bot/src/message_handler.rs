@@ -23,21 +23,30 @@ impl MessageHandler {
     pub async fn listen(&mut self) -> Result<(), irc::error::Error> {
         let stream = &mut self.client.stream()?;
         while let Some(message) = stream.next().await.transpose()? {
-            if let Command::PRIVMSG(ref target, ref msg) = message.command {
-                // Mensajes privados al bot
-                if target == &self.nickname {
-                    // Verificar si el mensaje comienza con "!", si es un comando
-                    if msg.starts_with('!') {
-                        // Manejar el comando
-                        command_handler::handle_command(&self.client, &message, msg);
-                    } else {
-                        // Si no es un comando, responder con un mensaje simple
-                        println!("[{}]: {}", message.source_nickname().unwrap_or("unknown"), msg);
-                        simple_message::simple_message(&self.client, message.source_nickname().unwrap_or("unknown"), "Eso no es un comando flaco");
+            match message.command {
+                Command::PRIVMSG(ref target, ref msg) => {
+                    // Mensajes privados al bot
+                    if target == &self.nickname {
+                        if msg.starts_with('!') {
+                            // Manejar el comando
+                            command_handler::handle_command(&self.client, &message, msg);
+                        } else {
+                            // Si no es un comando, responder con un mensaje simple
+                            println!("[{}]: {}", message.source_nickname().unwrap_or("unknown"), msg);
+                            simple_message::simple_message(&self.client, message.source_nickname().unwrap_or("unknown"), "Eso no es un comando flaco");
+                        }
                     }
-                }
-                // Resto de mensajes a canales
-                // ...
+                    // Mensajes en canales
+                    // ...
+                },
+                Command::PING(ref server, ref msg) => {
+                    // Responder a PING con PONG para mantener la conexión
+                    println!("Received PING from server: {}", server);
+                    let pong_message = Command::PONG(server.to_string(), msg.clone());
+                    self.client.send(pong_message)?;
+                    println!("Sent PONG to server");
+                },
+                _ => {}
             }
         }
         Ok(())
