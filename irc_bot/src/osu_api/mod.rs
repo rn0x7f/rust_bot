@@ -27,17 +27,19 @@ impl OsuAPI {
     }
 
     pub async fn authenticate(&mut self) -> Result<(), anyhow::Error> {
+        println!("Authenticating...");
         let (new_access_token, new_expires_at) = auth::auth(self.client.clone(), &self.main_url, self.client_id, self.client_secret.clone()).await?;
-        
         self.access_token = new_access_token;
         self.expires_at = new_expires_at;
-
+        println!("Authenticated");
         Ok(())
     }
 
     pub async fn ensure_authenticated(&mut self) -> Result<(), anyhow::Error> {
         if Instant::now() >= self.expires_at {
+            println!("Token expired, reauthenticating...");
             self.authenticate().await?;
+            println!("Token refreshed");
         }
 
         Ok(())
