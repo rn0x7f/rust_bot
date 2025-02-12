@@ -1,9 +1,9 @@
 use reqwest::Client;
 use anyhow::{Result, Context};
-use crate::osu_api::api_structures::user_response;
+use crate::osu_api::osu_api_structures::user_response;
 
-pub async fn get_user(client: &Client, access_token: &str, username: &str) -> Result<user_response::UserResponse> {
-    let url = format!("https://osu.ppy.sh/api/v2/users/{}", username);
+pub async fn get_user(client: &Client, url: &str, access_token: &str, username: &str) -> Result<user_response::UserResponse> {
+    let url = format!("{}/api/v2/users/{}", url, username);
     
     let res = client
         .get(&url)
