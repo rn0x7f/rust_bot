@@ -45,11 +45,7 @@ impl OsuAPIClient {
         Ok(())
     }
 
-    pub fn get_access_token(&self) -> &String {
-        &self.access_token
-    }
-
-    pub async fn get_user(&mut self, username: &String) -> Result<user_response::UserResponse, anyhow::Error> {
+    pub async fn get_user(&mut self, username: &str) -> Result<user_response::UserResponse, anyhow::Error> {
         self.ensure_authenticated().await?;
         let user: user_response::UserResponse = get_user::get_user(&self.client, &self.main_url, &self.access_token, username).await?;
         Ok(user)

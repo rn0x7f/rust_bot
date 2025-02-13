@@ -4,7 +4,7 @@ use irc::client::Client;
 
 use crate::osu_bot::functions::simple_message;
 use crate::osu_bot::commands::help_command;
-// use crate::osu_bot::commands::user_command;
+use crate::osu_bot::commands::user_command;
 
 
 pub async fn handle_command(irc_client: &mut Client, osu_api_client: &mut OsuAPIClient, author: &str, msg: &str) {
@@ -17,19 +17,19 @@ pub async fn handle_command(irc_client: &mut Client, osu_api_client: &mut OsuAPI
             "help" => {
                 help_command::help_command(irc_client, author).await;
             }
-            // "user" => {
-            //     if parts.len() != 2 {
-            //         simple_message::simple_message(client, author, "Usage: !user <username>").await;
-            //     } else {
-            //         let username = parts[1..].join(" ");
-            //         match user_command::user_command(client, author, osu_api_client, &username).await {
-            //             Ok(_) => {}
-            //             Err(e) => {
-            //                 simple_message::simple_message(client, author, &format!("Error: {}", e)).await;
-            //             }
-            //         }
-            //     }
-            // }
+            "user" => {
+                if parts.len() < 2 {
+                    simple_message::simple_message(irc_client, author, "Usage: !user <username>").await;
+                } else {
+                    let username = parts[1..].join(" ");
+                    match user_command::user_command(irc_client, author, osu_api_client, &username).await {
+                        Ok(_) => {}
+                        Err(_) => {
+                            simple_message::simple_message(irc_client, author, "Not found").await;
+                        }
+                    }
+                }
+            }
             "req" => {
                 let prompt = parts[1..].join(" ");
                 println!("Prueba: {}", prompt);
