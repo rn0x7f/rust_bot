@@ -1,5 +1,5 @@
 pub mod functions;
-// pub mod commands;
+pub mod commands;
 
 use crate::osu_api_client::OsuAPIClient;
 use crate::osu_irc_client::OsuIRCClient;
@@ -36,11 +36,12 @@ impl OsuBot {
     }
 
     pub async fn connect(&mut self) -> Result<(), anyhow::Error> {
-        let mut client = self.osu_irc_client.connect().await?;
+        let mut irc_client = self.osu_irc_client.connect().await?;
         println!("Connected to IRC server");
-        client.identify()?;
+        irc_client.identify()?;
         println!("Identified with IRC server");
-        listen::listen(&mut client, self.config.irc_nickname.to_string()).await?;
+        let osu_api_client = &mut self.osu_api_client;
+        listen::listen(&mut irc_client, osu_api_client, self.config.irc_nickname.to_string()).await?;
         Ok(())
     }
 }
