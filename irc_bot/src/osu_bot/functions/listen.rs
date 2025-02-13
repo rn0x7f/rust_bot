@@ -1,5 +1,6 @@
 use crate::osu_bot::functions::command_handler;
 use crate::osu_api_client::OsuAPIClient;
+use crate::osu_bot::functions::simple_message;
 
 use irc::client::Client;
 use irc::proto::Command;
@@ -15,6 +16,7 @@ pub async fn listen(irc_client: &mut Client, osu_api_client: &mut OsuAPIClient,b
                         if msg.starts_with('!') {
                             command_handler::handle_command(irc_client, osu_api_client, author, msg).await;
                         } else {
+                            simple_message::simple_message(irc_client, author, "Unknown command. Please use !help for assistance.").await;
                             println!("[{}]: {}", author, msg);
                         }
                     }
