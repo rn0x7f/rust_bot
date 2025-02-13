@@ -1,10 +1,14 @@
-mod bot;
-mod osu_api;
-use crate::bot::message_handler::MessageHandler;
+mod osu_bot;
+mod config;
+mod osu_api_client;
+mod osu_irc_client;
+
+use osu_bot::OsuBot;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut handler = MessageHandler::new().await?;
-    handler.listen().await?;
+async fn main() -> Result<(), anyhow::Error> {
+    let mut bot = OsuBot::new();
+    bot.authenticate().await?;
+    bot.connect().await?;
     Ok(())
 }
