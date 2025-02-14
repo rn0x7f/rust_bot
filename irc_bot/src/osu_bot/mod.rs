@@ -5,10 +5,12 @@ use crate::osu_api_client::OsuAPIClient;
 use crate::osu_irc_client::OsuIRCClient;
 use crate::config::Config;
 use functions::listen;
+use crate::llm_client::LLMClient;
 
 pub struct OsuBot {
     osu_api_client: OsuAPIClient,
     osu_irc_client: OsuIRCClient,
+    llm_client: LLMClient,
     config: Config,
 }
 
@@ -23,9 +25,11 @@ impl OsuBot {
             config.irc_password.to_string(), 
             config.irc_channels.clone()
         );
+        let llm_client = LLMClient::new(config.llm_api_url.to_string());
         Self {
             osu_api_client,
             osu_irc_client,
+            llm_client,
             config,
         }
     }
@@ -41,7 +45,7 @@ impl OsuBot {
         irc_client.identify()?;
         println!("Identified with IRC server");
         let osu_api_client = &mut self.osu_api_client;
-        listen::listen(&mut irc_client, osu_api_client, self.config.irc_nickname.to_string()).await?;
+        listen::listen(&mut irc_client, osu_api_client, &mut self.llm_client, self.config.irc_nickname.to_string()).await?;
         Ok(())
     }
 }

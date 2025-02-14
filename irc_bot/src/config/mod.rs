@@ -11,6 +11,8 @@ pub struct Config {
     pub irc_password: String,
     pub irc_port: u16,
     pub irc_channels: Vec<String>,
+    // LLM
+    pub llm_api_url: String,
 }
 
 impl Config {
@@ -32,6 +34,8 @@ impl Config {
                 .ok()
                 .map(|s| s.split(',').map(|c| c.trim().to_string()).collect())
                 .unwrap_or_else(|| vec!["#osu".to_string()]),
+            // LLM
+            llm_api_url: env::var("LLM_API_URL").expect("LLM_API_URL not set"),
         }
     }
 }
